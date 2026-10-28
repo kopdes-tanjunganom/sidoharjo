@@ -617,7 +617,7 @@ loadSubsidy();
     overlay.classList.add('promo-hidden');
     window.clearTimeout(promoTimer);
   }
-  const promoTimer=window.setTimeout(closePromo,4000);
+  const promoTimer=window.setTimeout(closePromo,30000);
   closeButton.addEventListener('click',closePromo);
   overlay.addEventListener('click',function(event){
     if(event.target===overlay)closePromo();
