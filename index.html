@@ -225,7 +225,7 @@ button:disabled{cursor:not-allowed!important;opacity:.58;filter:grayscale(.12)}
   <div id="cartItems" class="cartitems"></div><div class="total"><span>Total belanja</span><span id="cartTotal">Rp0</span></div>
   <form id="checkoutForm" class="formgrid">
    <label class="field">Nama penerima<input id="customerName" required maxlength="80" placeholder="Nama lengkap"></label>
-   <label class="field">Nomor WhatsApp<input id="customerPhone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="Contoh: 081234567890"><small>Isi manual nomor WhatsApp yang bisa dihubungi.</small></label>
+   <label class="field">Nomor WhatsApp<input id="customerPhone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="Contoh: 081234567890"></label>
    <div class="field">
       <span>Metode penerimaan</span>
       <div class="fulfillment-options" role="group" aria-label="Pilih metode penerimaan">
@@ -236,15 +236,13 @@ button:disabled{cursor:not-allowed!important;opacity:.58;filter:grayscale(.12)}
         <option value="antar">Antar ke alamatmu</option>
         <option value="ambil">Ambil di tempat</option>
       </select>
-      <small>Pilih apakah pesanan diantar atau diambil langsung di tempat.</small>
-    </div>
-   <label class="field"><span id="deliveryDateLabel">Tanggal pengiriman</span><input id="deliveryDate" type="date" required><small>Otomatis terisi hari ini. Bisa diubah jika ingin tanggal lain.</small></label>
+        </div>
+   <label class="field"><span id="deliveryDateLabel">Tanggal pengiriman</span><input id="deliveryDate" type="date" required></label>
    <label class="field"><span id="deliveryTimeLabel">Jam pengiriman</span><select id="deliveryTime" required></select><small id="deliveryTimeHint">Pilihan jam menyesuaikan waktu WIB. Slot yang sudah dimulai tidak ditampilkan.</small></label>
    <div class="field">
       <label for="customerAddress">Alamat lengkap</label>
       <textarea id="customerAddress" required maxlength="500" placeholder="Nama jalan, RT/RW, dusun, desa"></textarea>
       <button class="secondary location-btn" id="useCurrentLocation" type="button">📍 Gunakan Lokasi Saat Ini</button>
-      <small id="locationStatus">Gunakan lokasi untuk mengisi alamat dan tautan Google Maps secara otomatis.</small>
     </div>
    <label class="field">Catatan pesanan (opsional)<textarea id="customerNote" maxlength="300" placeholder="Catatan untuk admin"></textarea></label>
    <div class="warning" id="entryWarning">Isi nama, nomor WhatsApp, dan alamat secara manual. Pesanan bisa dibuat langsung dari tautan website ini.</div>
@@ -321,7 +319,7 @@ function refreshDeliverySlots(forceDefault=false){
   select.replaceChildren();
   slots.forEach(slot=>{const option=document.createElement("option");option.value=slot.label;option.textContent=slot.label;select.appendChild(option)});
   if(slots.some(slot=>slot.label===previous))select.value=previous;
-  const hint=$("deliveryTimeHint");if(hint)hint.textContent=isPickup?"Pengambilan tersedia pukul 08.30–16.30 WIB, dengan 7 pilihan jadwal.":"Pengantaran tersedia pukul 09.00–15.00 WIB, dengan pembagian setiap 1 jam.";
+  const hint=$("deliveryTimeHint");if(hint) hint.textContent = "";
 }
 function initDeliveryDate(){const input=$("deliveryDate");if(!input)return;const now=wibNow();input.min=now.date;if(!input.value)input.value=now.hour>=17?shiftDate(now.date,1):now.date;refreshDeliverySlots();input.addEventListener("change",()=>refreshDeliverySlots(true));}
 
@@ -440,13 +438,13 @@ function syncFulfillmentMode(){
     address.readOnly=true;
     locationButton.hidden=true;
     locationButton.disabled=true;
-    status.textContent="Pesanan akan diambil langsung di tempat. Alamat otomatis diisi.";
+    status.textContent="";
   }else{
     if(address.readOnly) address.value=previousDeliveryAddress;
     address.readOnly=false;
     locationButton.hidden=false;
     locationButton.disabled=false;
-    status.textContent="Gunakan lokasi untuk mengisi alamat dan tautan Google Maps secara otomatis.";
+    status.textContent="";
   }
 }
 $("fulfillmentType").addEventListener("change",()=>{syncFulfillmentMode();refreshDeliverySlots(true)});
@@ -480,7 +478,7 @@ try{
   if(!result||!result.ok)throw new Error(result?.error||"Pesanan belum berhasil disimpan.");
   recordPopularCheckout(entries);
   cart={};renderCart();$("checkoutForm").reset();previousDeliveryAddress="";syncFulfillmentMode();initDeliveryDate();refreshDeliverySlots(true);
-  $("locationStatus").textContent="Gunakan lokasi untuk mengisi alamat dan tautan Google Maps secara otomatis.";
+  $("locationStatus").textContent="";
   $("useCurrentLocation").disabled=false;$("useCurrentLocation").classList.remove("is-loading");$("useCurrentLocation").textContent="📍 Gunakan Lokasi Saat Ini";closeCart();
   if(waWindow&&!waWindow.closed){waWindow.location.href=waUrl;}else{window.location.href=waUrl;}
   toast("Pesanan tersimpan dan stok diperbarui.");
